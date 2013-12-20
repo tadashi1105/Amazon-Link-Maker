@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>AmazonHtmlWeb</title>
+
+<link rel="stylesheet" type="text/css" href="jquery.mobile.flatui.css" />
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+
+<script src="AmazonHtmlWeb.js"></script>
+
+<style type="text/css">
+li.ui-li a:link {
+  text-decoration: none;
+}
+.ui-icon-notext {
+  margin-top: 10px !important;
+}
+a:link.sig {
+  color:#cc6611;
+}
+</style>
+</head>
+<body>
+
+<div data-role="page" id="main" data-title="AmazonHtmlWeb">
+  <div data-role="header" data-position="fixed">
+    <h2>AmazonHtmlWeb</h2>
+    <a data-role="button" data-icon="flat-settings" class="ui-btn-right"
+        onclick="javascript:$.mobile.changePage('#conf', {transition:'flip'});">設定</a>
+  </div>
+  <div data-role="content">
+    <div data-role="fieldcontain">
+      <label for="kind">カテゴリー</label>
+      <select id="kind">
+      </select>
+      <br>
+      <label for="template">書式テンプレート</label>
+      <select id="template"></select>
+      <br>
+      <label for="keywords">キーワード</label>
+      <input type="text" id="keywords" />
+    </div>
+    <a href="javascript:search();" data-role="button" data-theme="b">検索</a>
+    <div id="ajax_msg"></div>
+  </div>
+</div>
+
+<div data-role="page" id="conf" data-title="Settings">
+  <div data-role="header" data-position="fixed">
+    <a data-role="button" data-icon="flat-cross"
+        onclick="javascript:reloadConfig();$.mobile.changePage('#main', {transition:'flip', reverse:true});">キャンセル</a>
+    <h2>設定</h2>
+    <a data-role="button" data-icon="flat-checkround"
+        onclick="javascript:if(saveConfig()) $.mobile.changePage('#main', {transition:'flip', reverse:true});">保存</a>
+  </div>
+  <div data-role="content">
+    <div data-role="fieldcontain">
+      <label for="conf_aff">アフィリエイトID</label>
+      <input type="text" id="conf_aff" /><br>
+
+      <label for="conf_template">テンプレート</label>
+      <ul id="conf_template" data-role="listview" data-inset="true">
+        <li><a href="javascript:showTemplateList('All');">All</a></li>
+        <li><a href="javascript:showTemplateList('服＆ファッション小物');">服＆ファッション小物</a></li>
+        <li><a href="javascript:showTemplateList('カー＆バイク用品');">カー＆バイク用品</a></li>
+        <li><a href="javascript:showTemplateList('ベビー＆マタニティ');">ベビー＆マタニティ</a></li>
+        <li><a href="javascript:showTemplateList('コスメ');">コスメ</a></li>
+        <li><a href="javascript:showTemplateList('本（和書）');">本（和書）</a></li>
+        <li><a href="javascript:showTemplateList('DVD');">DVD</a></li>
+        <li><a href="javascript:showTemplateList('家電＆カメラ');">家電＆カメラ</a></li>
+        <li><a href="javascript:showTemplateList('洋書');">洋書</a></li>
+        <li><a href="javascript:showTemplateList('食品＆飲料');">食品＆飲料</a></li>
+        <li><a href="javascript:showTemplateList('ヘルス＆ビューティー');">ヘルス＆ビューティー</a></li>
+        <li><a href="javascript:showTemplateList('ホｌビー');">ホｌビー</a></li>
+        <li><a href="javascript:showTemplateList('ＤＩＹ・工具');">ＤＩＹ・工具</a></li>
+        <li><a href="javascript:showTemplateList('ジュエリー');">ジュエリー</a></li>
+        <li><a href="javascript:showTemplateList('ホーム＆キッチン');">ホーム＆キッチン</a></li>
+        <li><a href="javascript:showTemplateList('ミュージック');">ミュージック</a></li>
+        <li><a href="javascript:showTemplateList('シューズ＆バッグ');">シューズ＆バッグ</a></li>
+        <li><a href="javascript:showTemplateList('ソフトウェア');">ソフトウェア</a></li>
+        <li><a href="javascript:showTemplateList('VHS');">VHS</a></li>
+        <li><a href="javascript:showTemplateList('ビデオ');">ビデオ</a></li>
+        <li><a href="javascript:showTemplateList('ゲーム');">ゲーム</a></li>
+        <li><a href="javascript:showTemplateList('時計');">時計</a></li>
+      </ul>
+
+      <label for="conf_out">出力方法</label>
+      <select id="conf_out"></select>
+    </div>
+    <a href="javascript:storageClear();" data-role="button" data-theme="d">初期化</a>
+  </div>
+</div>
+
+<div id="template-list" data-role="page" data-title="AmazonHtmlWeb">
+  <div data-role="header" data-position="fixed">
+    <a data-role="button" data-icon="arrow-l" data-iconpos="notext"
+        onclick="javascript:$.mobile.changePage('#conf', {transition:'slide', reverse:true});"></a>
+    <h2 id="template-list-title"></h2>
+    <a href="javascript:addTemplate();" data-role="button" data-icon="flat-plus" data-iconpos="notext"></a>
+  </div>
+  <div data-role="content">
+    <ul id="template-list-view" data-role="listview" data-icon="edit" class="ui-icon-alt" >
+    </ul>
+  </div>
+</div>
+
+<div id="template-editor" data-role="page" data-title="AmazonHtmlWeb" data-add-back-btn="true">
+  <div id="template-editor-panel" data-role="panel" data-position="right" data-display="reveal">
+    <ul id="placeholder-list" data-role="listview" data-icon="arrow-l" class="ui-icon-alt">
+      <li data-role="list-dvider" data-theme="a">予約語</li>
+    </ul>
+  </div>
+  <div data-role="header" data-position="fixed">
+    <a data-role="button" data-icon="flat-cross" data-iconpos="notext"
+        data-rel="back" data-direction="reverse"></a>
+    <h2 id="template-editor-title"></h2>
+    <a href="#template-editor-panel" data-role="button" data-icon="flat-menu" data-iconpos="notext"></a>
+  </div>
+  <div data-role="content">
+    <div data-role="fieldcontain">
+      <label for="name">名前:</label>
+      <input id="template-editor-name" type="text" name="name" value="" data-clear-btn="true" />
+      <br>
+      <label for="content">内容:</label>
+      <textarea id="template-editor-content" name="content"></textarea>
+    </div>
+    <a href="javascript:saveTemplate();" data-role="button" data-theme="b">Save</a>
+    <span id="template-editor-delete-btn-area">
+      <a href="javascript:deleteTemplate();" data-role="button" data-theme="d">Delete</a>
+    </span>
+  </div>
+</div>
+
+<div data-role="dialog" id="error_page" data-title="AmazonHtmlWeb">
+  <div data-role="header" data-position="fixed">
+    <h2>AmazonHtmlWeb</h2>
+  </div>
+  <div data-role="content">
+    <div id="error_msg"></div>
+  </div>
+</div>
+</body>
+</html>
